@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Love Letter 💖</title>
+  <title>Our Love Story 💖</title>
   <style>
     body {
       margin: 0;
@@ -16,224 +16,170 @@
       font-family: 'Poppins', sans-serif;
       overflow: hidden;
     }
-
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    /* Main Card */
-    .card {
-      width: 340px;
-      height: 240px;
-      perspective: 1000px;
-      cursor: pointer;
-    }
+    .page { display: none; }
+    .active { display: flex; justify-content: center; align-items: center; flex-direction: column; }
 
+    /* ---------- PAGE 1: FLIP CARD ---------- */
+    .card {
+      width: 320px; height: 220px;
+      perspective: 1000px; cursor: pointer;
+    }
     .card-inner {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
+      width: 100%; height: 100%;
+      position: relative; transform-style: preserve-3d;
       transition: transform 1s;
     }
-
-    .card.open .card-inner {
-      transform: rotateY(180deg);
-    }
+    .card.open1 .card-inner { transform: rotateY(180deg); }
+    .card.open2 .card-inner { transform: rotateY(360deg); }
 
     .card-front, .card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 15px;
+      position: absolute; width: 100%; height: 100%;
+      backface-visibility: hidden; border-radius: 15px;
       box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+      display: flex; justify-content: center; align-items: center;
+      font-size: 22px; font-weight: bold;
+    }
+    .card-front { background: #ff4e50; color: white; }
+    .card-back { background: white; transform: rotateY(180deg); color:#444; }
+
+    /* ---------- PAGE 2: STACKED CARDS ---------- */
+    .stack { position: relative; width: 260px; height: 160px; }
+    .stack-card {
+      position: absolute; width: 100%; height: 100%;
+      border-radius: 12px; background: #fff3f3;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+      display: flex; justify-content: center; align-items: center;
+      font-size: 18px; color:#333;
+      opacity: 0; transform: translateY(30px) scale(0.8);
+      transition: all 0.8s ease;
+    }
+    .stack-card.show {
+      opacity: 1; transform: translateY(0) scale(1);
+    }
+    .stack-card:nth-child(1) { z-index: 3; transform: rotate(-5deg); }
+    .stack-card:nth-child(2) { z-index: 2; transform: rotate(3deg); top:10px; }
+    .stack-card:nth-child(3) { z-index: 1; transform: rotate(8deg); top:20px; }
+
+    /* ---------- PAGE 3: HEART + CUBE ---------- */
+    .heart-btn {
+      width: 80px; height: 80px;
+      background: radial-gradient(circle,#ff4e50,#ff1744);
+      border-radius: 50%; box-shadow: 0 0 20px #ff4e50;
+      cursor: pointer; position: relative;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 10px #ff4e50; }
+      50% { transform: scale(1.2); box-shadow: 0 0 25px #ff1744; }
+      100% { transform: scale(1); box-shadow: 0 0 10px #ff4e50; }
     }
 
-    .card-front {
-      background: #ff4e50;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 26px;
-      font-weight: bold;
+    .cube {
+      width: 200px; height: 200px;
+      position: relative; transform-style: preserve-3d;
+      animation: rotateCube 12s infinite linear;
     }
-
-    .card-back {
-      background: #fff;
-      transform: rotateY(180deg);
-      padding: 20px;
-      box-sizing: border-box;
-      text-align: center;
+    @keyframes rotateCube {
+      from { transform: rotateX(0) rotateY(0); }
+      to { transform: rotateX(360deg) rotateY(360deg); }
     }
-
-    /* Messages */
-    .message {
-      display: none;
-      font-size: 18px;
-      color: #444;
-      margin: 20px 0;
-      animation: fadeIn 1s ease forwards;
+    .cube div {
+      position: absolute; width: 200px; height: 200px;
+      border-radius: 20px; backface-visibility: hidden;
+      background-size: cover; background-position: center;
     }
-
-    .next-btn {
-      display: none;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 20px;
-      background: linear-gradient(45deg, #ff4e50, #f9d423);
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      animation: popIn 0.6s ease forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0); }
-      80% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    /* Popup mini cards */
-    .popup-card {
-      display: none;
-      background: #ffdde1;
-      border-radius: 12px;
-      padding: 15px;
-      margin: 10px 0;
-      font-size: 16px;
-      color: #222;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      animation: popIn 0.7s ease forwards;
-    }
-
-    /* Final Letter */
-    .final-letter {
-      display: none;
-      font-size: 18px;
-      color: #333;
-      line-height: 1.6;
-      margin-top: 20px;
-      animation: fadeIn 1.5s ease forwards;
-    }
-
-    .final-love {
-      font-size: 54px; /* 3x bigger */
-      font-weight: bold;
-      color: #ff1744;
-      margin-top: 20px;
-      text-shadow: 0 0 15px #ff8a80;
-      animation: popIn 1s ease forwards;
-    }
-
-    /* Confetti */
-    .confetti {
-      position: fixed;
-      width: 10px;
-      height: 10px;
-      top: -10px;
-      animation: fall 4s linear infinite;
-    }
-
-    @keyframes fall {
-      to { transform: translateY(100vh) rotate(360deg); }
-    }
+    .front  { transform: rotateY(0deg) translateZ(100px); background-image:url('https://wallpapercave.com/wp/wp4042781.jpg'); }
+    .back   { transform: rotateY(180deg) translateZ(100px); background-image:url('https://wallpapercave.com/wp/wp1822715.jpg'); }
+    .right  { transform: rotateY(90deg) translateZ(100px); background-image:url('https://wallpapercave.com/wp/wp1822723.jpg'); }
+    .left   { transform: rotateY(-90deg) translateZ(100px); background-image:url('https://wallpapercave.com/wp/wp1822730.jpg'); }
+    .top    { transform: rotateX(90deg) translateZ(100px); background-image:url('https://wallpapercave.com/wp/wp1822739.jpg'); }
+    .bottom { transform: rotateX(-90deg) translateZ(100px); background-image:url('https://wallpapercave.com/wp/wp1822746.jpg'); }
   </style>
 </head>
 <body>
-  <div class="card" id="card">
-    <div class="card-inner">
-      <div class="card-front">
-        💌 Open Me
-      </div>
-      <div class="card-back" id="cardBack">
-        <div class="message" id="msg1">The moment our souls met, my world found its missing piece... 🌸</div>
-        <div class="popup-card" id="popup1">You make ordinary moments feel like magic ✨</div>
-        <div class="popup-card" id="popup2">With you, every heartbeat is poetry ❤️</div>
-        <div class="popup-card" id="popup3">Forever isn’t long enough when I’m with you 💕</div>
-        <div class="final-letter" id="finalLetter">
-          <p>You are the reason I believe in love,  
-          the melody in my silence, the light in my darkest nights...</p>
-          <p>Every moment with you is a gift, a promise, a dream come true.</p>
-          <div class="final-love">I LOVE YOU ❤️</div>
-        </div>
-        <button class="next-btn" id="nextBtn">Next</button>
+  <!-- PAGE 1: FLIP CARD -->
+  <div class="page active" id="page1">
+    <div class="card" id="flipCard">
+      <div class="card-inner">
+        <div class="card-front">💌 Open Me</div>
+        <div class="card-back">Every love story is beautiful... but ours is my favorite 💖</div>
       </div>
     </div>
   </div>
 
+  <!-- PAGE 2: STACKED CARDS -->
+  <div class="page" id="page2">
+    <div class="stack">
+      <div class="stack-card" id="s1">You are my sunshine ☀️</div>
+      <div class="stack-card" id="s2">You are my heartbeat ❤️</div>
+      <div class="stack-card" id="s3">You are my forever 🌹</div>
+    </div>
+    <div class="heart-btn" id="toPage3"></div>
+  </div>
+
+  <!-- PAGE 3: HEART TO CUBE -->
+  <div class="page" id="page3">
+    <div class="heart-btn" id="heartBtn"></div>
+  </div>
+
   <script>
-    const card = document.getElementById("card");
-    const messages = document.querySelectorAll(".message");
-    const popups = document.querySelectorAll(".popup-card");
-    const finalLetter = document.getElementById("finalLetter");
-    const nextBtn = document.getElementById("nextBtn");
+    const flipCard = document.getElementById("flipCard");
+    const page1 = document.getElementById("page1");
+    const page2 = document.getElementById("page2");
+    const page3 = document.getElementById("page3");
+    let flipCount = 0;
 
-    let step = 0;
-
-    // Open card
-    card.addEventListener("click", () => {
-      if (!card.classList.contains("open")) {
-        card.classList.add("open");
-        showStep();
+    // Page 1 flip logic
+    flipCard.addEventListener("click", () => {
+      flipCount++;
+      if (flipCount === 1) {
+        flipCard.classList.add("open1");
+      } else if (flipCount === 2) {
+        flipCard.classList.remove("open1");
+        flipCard.classList.add("open2");
+        setTimeout(() => {
+          page1.classList.remove("active");
+          page2.classList.add("active");
+          showStacked();
+        }, 1500);
       }
     });
 
-    function showStep() {
-      messages.forEach(m => m.style.display = "none");
-      popups.forEach(p => p.style.display = "none");
-      finalLetter.style.display = "none";
-      nextBtn.style.display = "none";
-
-      if (step === 0) {
-        messages[0].style.display = "block";
-        nextBtn.style.display = "inline-block";
-      } else if (step === 1) {
-        popups[0].style.display = "block";
-        nextBtn.style.display = "inline-block";
-      } else if (step === 2) {
-        popups[1].style.display = "block";
-        nextBtn.style.display = "inline-block";
-      } else if (step === 3) {
-        popups[2].style.display = "block";
-        nextBtn.style.display = "inline-block";
-      } else if (step === 4) {
-        finalLetter.style.display = "block";
-        launchConfetti();
-      }
+    // Page 2 stacked cards animation
+    function showStacked() {
+      setTimeout(()=>document.getElementById("s1").classList.add("show"),500);
+      setTimeout(()=>document.getElementById("s2").classList.add("show"),1000);
+      setTimeout(()=>document.getElementById("s3").classList.add("show"),1500);
     }
 
-    nextBtn.addEventListener("click", () => {
-      step++;
-      showStep();
+    // Move to page 3
+    document.getElementById("toPage3").addEventListener("click", ()=>{
+      page2.classList.remove("active");
+      page3.classList.add("active");
     });
 
-    // Confetti generator
-    function launchConfetti() {
-      for (let i = 0; i < 80; i++) {
-        let confetti = document.createElement("div");
-        confetti.classList.add("confetti");
-        confetti.style.left = Math.random() * window.innerWidth + "px";
-        confetti.style.backgroundColor = randomColor();
-        confetti.style.animationDuration = 2 + Math.random() * 3 + "s";
-        document.body.appendChild(confetti);
-
-        setTimeout(() => confetti.remove(), 5000);
-      }
-    }
-
-    function randomColor() {
-      const colors = ["#ff4e50", "#f9d423", "#fc913a", "#f48fb1", "#81d4fa", "#a5d6a7", "#ffd54f"];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
+    // Heart → Cube transformation
+    const heartBtn = document.getElementById("heartBtn");
+    heartBtn.addEventListener("click", ()=>{
+      heartBtn.remove();
+      const cube = document.createElement("div");
+      cube.classList.add("cube");
+      cube.innerHTML = `
+        <div class="front"></div>
+        <div class="back"></div>
+        <div class="right"></div>
+        <div class="left"></div>
+        <div class="top"></div>
+        <div class="bottom"></div>
+      `;
+      page3.appendChild(cube);
+    });
   </script>
 </body>
 </html>
