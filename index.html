@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Love Letter Card 💌</title>
+  <title>Love Letter 💖</title>
   <style>
     body {
       margin: 0;
@@ -10,16 +10,25 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+      background-size: 300% 300%;
+      animation: gradientBG 8s ease infinite;
       font-family: 'Poppins', sans-serif;
       overflow: hidden;
     }
 
-    /* Card Container */
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Main Card */
     .card {
-      width: 320px;
-      height: 220px;
+      width: 340px;
+      height: 240px;
       perspective: 1000px;
+      cursor: pointer;
     }
 
     .card-inner {
@@ -39,8 +48,8 @@
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
-      border-radius: 12px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
     }
 
     .card-front {
@@ -49,18 +58,19 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 22px;
+      font-size: 26px;
       font-weight: bold;
     }
 
     .card-back {
-      background: white;
+      background: #fff;
       transform: rotateY(180deg);
       padding: 20px;
       box-sizing: border-box;
       text-align: center;
     }
 
+    /* Messages */
     .message {
       display: none;
       font-size: 18px;
@@ -74,7 +84,7 @@
       padding: 10px 20px;
       border: none;
       border-radius: 20px;
-      background: #ff4e50;
+      background: linear-gradient(45deg, #ff4e50, #f9d423);
       color: white;
       font-size: 16px;
       cursor: pointer;
@@ -82,7 +92,7 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -92,20 +102,49 @@
       100% { transform: scale(1); }
     }
 
+    /* Popup mini cards */
+    .popup-card {
+      display: none;
+      background: #ffdde1;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 10px 0;
+      font-size: 16px;
+      color: #222;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      animation: popIn 0.7s ease forwards;
+    }
+
+    /* Final Letter */
+    .final-letter {
+      display: none;
+      font-size: 18px;
+      color: #333;
+      line-height: 1.6;
+      margin-top: 20px;
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    .final-love {
+      font-size: 54px; /* 3x bigger */
+      font-weight: bold;
+      color: #ff1744;
+      margin-top: 20px;
+      text-shadow: 0 0 15px #ff8a80;
+      animation: popIn 1s ease forwards;
+    }
+
     /* Confetti */
     .confetti {
       position: fixed;
       width: 10px;
       height: 10px;
-      background: red;
       top: -10px;
-      animation: fall 3s linear infinite;
+      animation: fall 4s linear infinite;
     }
 
     @keyframes fall {
-      to {
-        transform: translateY(100vh) rotate(360deg);
-      }
+      to { transform: translateY(100vh) rotate(360deg); }
     }
   </style>
 </head>
@@ -116,10 +155,16 @@
         💌 Open Me
       </div>
       <div class="card-back" id="cardBack">
-        <div class="message" id="msg1">From the moment I met you, my world became brighter... 🌸</div>
-        <div class="message" id="msg2">Every heartbeat of mine whispers your name... 💕</div>
-        <div class="message" id="msg3">You are my dream, my love, my forever... 🌹</div>
-        <div class="message" id="msg4" style="font-size:22px; color:#ff4e50; font-weight:bold;">I Love You ❤️</div>
+        <div class="message" id="msg1">The moment our souls met, my world found its missing piece... 🌸</div>
+        <div class="popup-card" id="popup1">You make ordinary moments feel like magic ✨</div>
+        <div class="popup-card" id="popup2">With you, every heartbeat is poetry ❤️</div>
+        <div class="popup-card" id="popup3">Forever isn’t long enough when I’m with you 💕</div>
+        <div class="final-letter" id="finalLetter">
+          <p>You are the reason I believe in love,  
+          the melody in my silence, the light in my darkest nights...</p>
+          <p>Every moment with you is a gift, a promise, a dream come true.</p>
+          <div class="final-love">I LOVE YOU ❤️</div>
+        </div>
         <button class="next-btn" id="nextBtn">Next</button>
       </div>
     </div>
@@ -128,41 +173,52 @@
   <script>
     const card = document.getElementById("card");
     const messages = document.querySelectorAll(".message");
+    const popups = document.querySelectorAll(".popup-card");
+    const finalLetter = document.getElementById("finalLetter");
     const nextBtn = document.getElementById("nextBtn");
-    let current = 0;
 
-    // Open the card on click
+    let step = 0;
+
+    // Open card
     card.addEventListener("click", () => {
       if (!card.classList.contains("open")) {
         card.classList.add("open");
-        showMessage(0);
+        showStep();
       }
     });
 
-    function showMessage(index) {
-      messages.forEach(msg => msg.style.display = "none");
+    function showStep() {
+      messages.forEach(m => m.style.display = "none");
+      popups.forEach(p => p.style.display = "none");
+      finalLetter.style.display = "none";
       nextBtn.style.display = "none";
 
-      if (messages[index]) {
-        messages[index].style.display = "block";
-        setTimeout(() => {
-          nextBtn.style.display = "inline-block";
-        }, 1000);
-      }
-
-      if (index === messages.length - 1) {
+      if (step === 0) {
+        messages[0].style.display = "block";
+        nextBtn.style.display = "inline-block";
+      } else if (step === 1) {
+        popups[0].style.display = "block";
+        nextBtn.style.display = "inline-block";
+      } else if (step === 2) {
+        popups[1].style.display = "block";
+        nextBtn.style.display = "inline-block";
+      } else if (step === 3) {
+        popups[2].style.display = "block";
+        nextBtn.style.display = "inline-block";
+      } else if (step === 4) {
+        finalLetter.style.display = "block";
         launchConfetti();
       }
     }
 
     nextBtn.addEventListener("click", () => {
-      current++;
-      showMessage(current);
+      step++;
+      showStep();
     });
 
-    // Simple confetti generator
+    // Confetti generator
     function launchConfetti() {
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 80; i++) {
         let confetti = document.createElement("div");
         confetti.classList.add("confetti");
         confetti.style.left = Math.random() * window.innerWidth + "px";
@@ -175,19 +231,9 @@
     }
 
     function randomColor() {
-      const colors = ["#ff4e50", "#fc913a", "#f9d423", "#ede574", "#e1f5c4", "#a1c4fd", "#c2e9fb", "#fcb045"];
+      const colors = ["#ff4e50", "#f9d423", "#fc913a", "#f48fb1", "#81d4fa", "#a5d6a7", "#ffd54f"];
       return colors[Math.floor(Math.random() * colors.length)];
     }
   </script>
 </body>
 </html>
-
-
----
-
-✨ Features:
-
-💌 Card front says “Open Me” → when clicked, it flips open.
-
-
-
