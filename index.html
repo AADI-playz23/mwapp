@@ -1,216 +1,418 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Love Letter Card</title>
-  <style>
-    body {
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(120deg, #ffafbd, #ffc3a0);
-      font-family: 'Poppins', sans-serif;
-      overflow: hidden;
-    }.container {
-  perspective: 1500px;
-}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Our Love Story — Interactive Card</title>
+<style>
+  :root{
+    --bg1: linear-gradient(135deg,#ffd1dc,#ffecd9);
+    --bg2: linear-gradient(135deg,#c2e9fb,#a1c4fd);
+    --bg3: linear-gradient(135deg,#f6d365,#fda085);
+    --accent: #ff6b8a;
+    --soft-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    --glass: rgba(255,255,255,0.6);
+  }
 
-.flip-card {
-  background: transparent;
-  width: 300px;
-  height: 200px;
-  margin: 20px auto;
-  perspective: 1000px;
-  cursor: pointer;
-}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+  body{
+    display:flex;align-items:center;justify-content:center;
+    background: linear-gradient(120deg,#ffe6f0 0%, #f7f0ff 50%, #e6fff8 100%);
+    background-size: 300% 300%;
+    animation: bgShift 12s ease infinite;
+    overflow:hidden;
+  }
+  @keyframes bgShift {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
 
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 1s;
-  transform-style: preserve-3d;
-}
+  /* Main frame */
+  .stage {
+    width: 920px; max-width:95vw;
+    height: 620px; max-height:92vh;
+    border-radius: 20px;
+    padding: 28px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.72));
+    box-shadow: 0 30px 80px rgba(0,0,0,0.12);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:18px;
+  }
 
-.flip-card.flipped .flip-card-inner {
-  transform: rotateY(180deg);
-}
+  /* Simple page system */
+  .page { display:none; width:100%; height:100%; align-items:center; justify-content:center; gap:18px; }
+  .page.active { display:flex; flex-direction:column; }
 
-.flip-card-front, .flip-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: white;
-}
+  h1{margin:0;font-size:20px;color:#333; text-align:center}
+  .subtitle{color:#666;margin-top:6px;font-size:14px}
 
-.flip-card-front { background: #ff758c; }
-.flip-card-back { background: #ff7eb3; transform: rotateY(180deg); }
+  /* ----------------- PAGE 1: FLIP CARDS ----------------- */
+  .flip-row { display:flex; gap:20px; align-items:center; justify-content:center; flex-wrap:wrap; }
+  .flip-card {
+    width: 280px; height: 180px; perspective: 1200px; border-radius:16px;
+    cursor:pointer; position:relative;
+  }
+  .flip-inner {
+    width:100%; height:100%; position:relative; transform-style:preserve-3d;
+    transition: transform 0.9s cubic-bezier(.2,.9,.3,1);
+    box-shadow: var(--soft-shadow);
+    border-radius:16px;
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
 
-/* Stack cards */
-.stack-container {
-  display: none;
-  position: relative;
-  width: 320px;
-  height: 220px;
-}
+  .flip-face {
+    position:absolute; inset:0; border-radius:16px; overflow:hidden; display:flex;
+    align-items:center; justify-content:center; color:white; font-weight:600;
+    font-size:18px; backface-visibility:hidden;
+  }
 
-.stack-card {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 15px;
-  background: white;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #ff5e78;
-  transform: scale(0.9);
-  transition: all 1s ease;
-}
+  /* 3 different color styles for variety */
+  .fc1 .front { background: linear-gradient(135deg,#ff758c,#ff9a9e); }
+  .fc1 .back  { background: linear-gradient(135deg,#ffd1dc,#ffecd9); color:#333; transform:rotateY(180deg); }
 
-.stack-card:nth-child(1) { top: 0; z-index: 1; }
-.stack-card:nth-child(2) { top: 20px; z-index: 2; }
-.stack-card:nth-child(3) { top: 40px; z-index: 3; }
+  .fc2 .front { background: linear-gradient(135deg,#8ec5fc,#e0c3fc); }
+  .fc2 .back  { background: linear-gradient(135deg,#c2e9fb,#a1c4fd); color:#222; transform:rotateY(180deg); }
 
-.stack-card.pop {
-  top: -50px;
-  transform: scale(1.1);
-}
+  .fc3 .front { background: linear-gradient(135deg,#f6d365,#fda085); }
+  .fc3 .back  { background: linear-gradient(135deg,#f8b3ff,#ffd6a5); color:#2b2b2b; transform:rotateY(180deg); }
 
-/* Cube */
-.cube-scene {
-  display: none;
-  width: 250px;
-  height: 250px;
-  perspective: 1000px;
-}
+  .flip-note { font-size:14px; color:rgba(255,255,255,0.92); text-shadow:0 6px 18px rgba(0,0,0,0.15); }
 
-.cube {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  transform: rotateY(0deg);
-  transition: transform 2s;
-}
+  /* continue button (glowing heart) */
+  .continue-btn {
+    display:inline-flex; align-items:center; justify-content:center;
+    gap:10px; border:none; cursor:pointer; border-radius:999px;
+    padding:12px 20px; font-weight:700; color:white;
+    background: linear-gradient(90deg,#ff6b8a,#ff9472);
+    box-shadow: 0 8px 30px rgba(255,107,138,0.25), 0 2px 0 rgba(0,0,0,0.08);
+    transform: translateY(0); transition: transform .25s ease, box-shadow .25s ease;
+    outline:none;
+  }
+  .continue-btn:hover{ transform: translateY(-3px); box-shadow: 0 14px 40px rgba(255,107,138,0.25); }
+  .continue-btn .heart {
+    width:44px; height:44px; display:inline-grid;place-items:center;border-radius:50%;
+    background: radial-gradient(circle at 20% 20%, #fff0, #ff4d69 40%, #ff2b5a);
+    box-shadow: 0 6px 16px rgba(255,45,90,0.28), inset 0 -6px 14px rgba(0,0,0,0.06);
+    transform-origin:center;
+    animation: heartPop 1.6s infinite;
+  }
+  @keyframes heartPop {0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
 
-.cube-face {
-  position: absolute;
-  width: 250px;
-  height: 250px;
-  border-radius: 20px;
-  background-size: cover;
-  background-position: center;
-}
+  /* ----------------- PAGE 2: STACK POPUP ----------------- */
+  .stack-stage { width:420px; height:300px; position:relative; display:flex;align-items:center;justify-content:center; }
+  .stack-card {
+    position:absolute; width:360px; height:240px; border-radius:18px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px;
+    color:#fff; box-shadow: var(--soft-shadow); transition: all 700ms cubic-bezier(.2,.9,.25,1);
+    transform-origin: top left;
+  }
+  .stack-card.c1 { background: linear-gradient(135deg,#ff9a9e,#fecfef); top:0; left:0; z-index:3; transform: translate(0,0) rotate(-4deg) scale(1); }
+  .stack-card.c2 { background: linear-gradient(135deg,#b3ffd9,#a8edea); top:20px; left:20px; z-index:2; transform: translate(0,0) rotate(3deg) scale(0.98); }
+  .stack-card.c3 { background: linear-gradient(135deg,#ffd89b,#19547b); top:40px; left:40px; z-index:1; transform: translate(0,0) rotate(6deg) scale(0.96); }
 
-.front  { transform: rotateY(0deg) translateZ(125px); background: url('https://i.ibb.co/gFp8Y9F/anime1.jpg'); }
-.back   { transform: rotateY(180deg) translateZ(125px); background: url('https://i.ibb.co/31TtPcf/anime2.jpg'); }
-.right  { transform: rotateY(90deg) translateZ(125px); background: url('https://i.ibb.co/pJR9pMs/anime3.jpg'); }
-.left   { transform: rotateY(-90deg) translateZ(125px); background: url('https://i.ibb.co/xDYK9Xt/anime4.jpg'); }
-.top    { transform: rotateX(90deg) translateZ(125px); background: url('https://i.ibb.co/kqG75kz/anime5.jpg'); }
-.bottom { transform: rotateX(-90deg) translateZ(125px); background: url('https://i.ibb.co/9GF3rCy/anime6.jpg'); }
+  /* popped states - controlled by JS toggles */
+  .stack-card.popped.c1 { transform: translate(0,-160px) rotate(-4deg) scale(1.03); box-shadow: 0 30px 60px rgba(0,0,0,0.25); }
+  .stack-card.popped.c2 { top:0; left:0; transform: translate(10px,10px) rotate(3deg) scale(1.01); z-index:2; }
+  .stack-card.popped.c3 { top:10px; left:10px; transform: translate(20px,20px) rotate(6deg) scale(1); z-index:1; }
 
-/* Final Love Letter */
-.letter {
-  display: none;
-  text-align: center;
-  color: white;
-  font-size: 1.5em;
-  margin-top: 20px;
-}
+  .stack-hint{font-size:13px;color:#333;margin-top:12px}
 
-.letter h1 {
-  font-size: 3em;
-  color: #fff;
-  text-shadow: 2px 2px 10px #ff3e70;
-}
+  /* small neon-style next button */
+  .small-next {
+    border:none;background:linear-gradient(90deg,#6be3ff,#a68bff); color:white;padding:10px 16px;border-radius:12px;
+    font-weight:700; cursor:pointer; box-shadow: 0 10px 30px rgba(104,96,255,0.12);
+  }
 
-  </style>
+  /* ----------------- PAGE 3: HEART -> CUBE ----------------- */
+  .heart-center {
+    width:140px;height:140px;border-radius:50%;display:grid;place-items:center;
+    background:conic-gradient(from 120deg,#ff9ab2,#ffb18f,#ffd59b,#ffd1f6); box-shadow: 0 12px 30px rgba(255,90,120,0.18);
+    cursor:pointer; transition: transform .22s ease;
+  }
+  .heart-center:hover{ transform: scale(1.04) rotate(-2deg); }
+  .heart-icon{ font-size:40px; filter: drop-shadow(0 6px 12px rgba(255,76,129,0.22)); }
+
+  .cube-scene { width:320px; height:320px; perspective:1400px; display:flex; align-items:center; justify-content:center; }
+  .cube {
+    width:220px;height:220px; position:relative; transform-style:preserve-3d; transition: transform 700ms cubic-bezier(.2,.9,.3,1);
+  }
+  .face {
+    position:absolute; left:0; top:0; width:220px; height:220px; border-radius:22px;
+    background-size:cover; background-position:center; box-shadow: 0 18px 50px rgba(0,0,0,0.16);
+    border: 4px solid rgba(255,255,255,0.12);
+  }
+  /* placeholder anime-couple images (you can replace with your own links) */
+  .f-front  { transform: rotateY(0deg) translateZ(110px); background-image:url('https://i.ibb.co/4PKTNYp/anime1.jpg'); }
+  .f-right  { transform: rotateY(90deg) translateZ(110px); background-image:url('https://i.ibb.co/RvG3tqz/anime3.jpg'); }
+  .f-back   { transform: rotateY(180deg) translateZ(110px); background-image:url('https://i.ibb.co/WGfn9hD/anime2.jpg'); }
+  .f-left   { transform: rotateY(-90deg) translateZ(110px); background-image:url('https://i.ibb.co/F3Zm7DF/anime4.jpg'); }
+  .f-top    { transform: rotateX(90deg) translateZ(110px); background-image:url('https://i.ibb.co/ypdF5hX/anime5.jpg'); }
+  .f-bottom { transform: rotateX(-90deg) translateZ(110px); background-image:url('https://i.ibb.co/VLkXqGZ/anime6.jpg'); }
+
+  .cube-caption{margin-top:14px;color:#333;font-weight:700}
+
+  /* final letter on bottom / small */
+  .final-letter {
+    margin-top:12px; text-align:center; color:#2c2c2c;
+    max-width:70%;
+  }
+  .final-lines { font-size:18px; margin:6px 0; color:#333 }
+  .final-i { font-size:46px; color:#ff2b66; font-weight:900; text-shadow: 0 10px 30px rgba(255,43,102,0.18); margin-top:8px; }
+
+  /* responsive tweaks */
+  @media (max-width:880px){
+    .stage{width:95vw;height:86vh;padding:18px}
+    .flip-card{width:240px;height:160px}
+    .stack-stage{width:330px;height:240px}
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <!-- Flip Cards -->
-    <div class="flip-card" id="flip1">
-      <div class="flip-card-inner">
-        <div class="flip-card-front">Open Me ❤</div>
-        <div class="flip-card-back">Here’s a surprise 🌸</div>
+
+  <div class="stage" aria-live="polite">
+
+    <!-- PAGE 1: Flip cards -->
+    <div id="page1" class="page active">
+      <h1>Little chapters — tap each card to flip</h1>
+      <div class="subtitle">Each flip reveals a line of our story ✨</div>
+
+      <div class="flip-row" aria-hidden="false">
+        <div class="flip-card fc1" data-index="0" title="Tap to flip">
+          <div class="flip-inner">
+            <div class="flip-face front"><div class="flip-note">A moment called forever</div></div>
+            <div class="flip-face back"><div style="padding:20px;color:#5b2a39">From the first glance my heart knew home.</div></div>
+          </div>
+        </div>
+
+        <div class="flip-card fc2" data-index="1" title="Tap to flip">
+          <div class="flip-inner">
+            <div class="flip-face front"><div class="flip-note">Promise in a smile</div></div>
+            <div class="flip-face back"><div style="padding:20px;color:#3b2a3f">You turned ordinary days into poetry.</div></div>
+          </div>
+        </div>
+
+        <div class="flip-card fc3" data-index="2" title="Tap to flip">
+          <div class="flip-inner">
+            <div class="flip-face front"><div class="flip-note">One more chapter</div></div>
+            <div class="flip-face back"><div style="padding:20px;color:#3c2830">Now every sunrise is ours together.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <button id="toStackBtn" class="continue-btn" style="display:none">
+          <span class="heart" aria-hidden="true">💖</span> Turn the Page of Love
+        </button>
       </div>
     </div>
-    <div class="flip-card" id="flip2" style="display:none;">
-      <div class="flip-card-inner">
-        <div class="flip-card-front">Another Flip ✨</div>
-        <div class="flip-card-back">Wait for magic 💫</div>
+
+    <!-- PAGE 2: Stack popup -->
+    <div id="page2" class="page" aria-hidden="true">
+      <h1>Secrets in the stack — tap to reveal each note</h1>
+      <div class="subtitle">Cards will pop and lie on the previous, showing edges</div>
+
+      <div class="stack-stage" id="stackStage" aria-live="polite">
+        <div class="stack-card c1" id="s1">Dreams of us ✨</div>
+        <div class="stack-card c2" id="s2">Sweet little memories 🌸</div>
+        <div class="stack-card c3" id="s3">Forever and always ❤️</div>
       </div>
-    </div><!-- Stack Cards -->
-<div class="stack-container" id="stack">
-  <div class="stack-card">First Popup 💌</div>
-  <div class="stack-card">Second Popup 💖</div>
-  <div class="stack-card">Third Popup 💞</div>
-</div>
 
-<!-- Cube -->
-<div class="cube-scene" id="cubeScene">
-  <div class="cube" id="cube">
-    <div class="cube-face front"></div>
-    <div class="cube-face back"></div>
-    <div class="cube-face right"></div>
-    <div class="cube-face left"></div>
-    <div class="cube-face top"></div>
-    <div class="cube-face bottom"></div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="stack-hint" id="stackHint">Tap the visible card to reveal the next</div>
+        <button id="stackNext" class="small-next" style="display:none">Continue</button>
+      </div>
+    </div>
+
+    <!-- PAGE 3: Heart -> cube -->
+    <div id="page3" class="page" aria-hidden="true">
+      <h1>Tap my heart — unfold memories</h1>
+      <div class="subtitle">Touch the heart to reveal the cube. Tap cube to rotate right.</div>
+
+      <div id="heartWrap">
+        <div class="heart-center" id="heartBtn" role="button" aria-pressed="false" title="Unfold my heart">
+          <div class="heart-icon">💗</div>
+        </div>
+      </div>
+
+      <div class="cube-scene" id="cubeScene" style="display:none">
+        <div class="cube" id="cube">
+          <div class="face f-front"></div>
+          <div class="face f-right"></div>
+          <div class="face f-back"></div>
+          <div class="face f-left"></div>
+          <div class="face f-top"></div>
+          <div class="face f-bottom"></div>
+        </div>
+      </div>
+
+      <div class="cube-caption" id="cubeCaption" style="display:none">Tap the cube to rotate right</div>
+
+      <div class="final-letter" id="finalLetter" style="display:none">
+        <div class="final-lines">You are the chapter I never want to end. <br>Every silence with you sings.</div>
+        <div class="final-i">I LOVE YOU ❤️</div>
+      </div>
+    </div>
+
   </div>
-</div>
 
-<!-- Letter -->
-<div class="letter" id="letter">
-  <p>You are the reason my world feels brighter 💫<br>
-  With you, every moment becomes magic ✨</p>
-  <h1>I LOVE YOU ❤</h1>
-</div>
+<script>
+  // PAGE CONTROL
+  const page1 = document.getElementById('page1');
+  const page2 = document.getElementById('page2');
+  const page3 = document.getElementById('page3');
 
-  </div>  <script>
-    const flip1 = document.getElementById('flip1');
-    const flip2 = document.getElementById('flip2');
-    const stack = document.getElementById('stack');
-    const stackCards = document.querySelectorAll('.stack-card');
-    const cubeScene = document.getElementById('cubeScene');
-    const cube = document.getElementById('cube');
-    const letter = document.getElementById('letter');
-
-    flip1.addEventListener('click', () => {
-      flip1.classList.add('flipped');
-      setTimeout(() => flip2.style.display = 'block', 1200);
+  // ---------- Page1 flips ----------
+  const flipCards = document.querySelectorAll('.flip-card');
+  let flippedCount = 0;
+  flipCards.forEach(card=>{
+    card.addEventListener('click', ()=> {
+      // flip only once
+      if(!card.classList.contains('flipped')){
+        card.classList.add('flipped');
+        // small pop effect
+        card.querySelector('.flip-inner').style.boxShadow = '0 30px 60px rgba(0,0,0,0.18)';
+        flippedCount++;
+        if(flippedCount >= flipCards.length){
+          // show continue button
+          setTimeout(()=> document.getElementById('toStackBtn').style.display = 'inline-flex', 500);
+        }
+      }
     });
+  });
 
-    flip2.addEventListener('click', () => {
-      flip2.classList.add('flipped');
-      setTimeout(() => stack.style.display = 'block', 1200);
-      let delay = 0;
-      stackCards.forEach((card, i) => {
-        setTimeout(() => card.classList.add('pop'), delay);
-        delay += 1500;
-      });
-      setTimeout(() => {
-        cubeScene.style.display = 'block';
-        let angle = 0;
-        setInterval(() => {
-          angle -= 90;
-          cube.style.transform = `rotateY(${angle}deg)`;
-        }, 3000);
-        setTimeout(() => letter.style.display = 'block', 4000);
-      }, 5000);
-    });
-  </script></body>
+  // continue to stack page when heart clicked
+  document.getElementById('toStackBtn').addEventListener('click', ()=>{
+    page1.classList.remove('active'); page1.setAttribute('aria-hidden','true');
+    page2.classList.add('active'); page2.setAttribute('aria-hidden','false');
+    // start with only first card visible (others behind)
+    initStackState();
+  });
+
+  // ---------- Page2 stack popup behavior ----------
+  const s1 = document.getElementById('s1');
+  const s2 = document.getElementById('s2');
+  const s3 = document.getElementById('s3');
+  const stackStage = document.getElementById('stackStage');
+  const stackNextBtn = document.getElementById('stackNext');
+  const stackHint = document.getElementById('stackHint');
+
+  let stackStep = 0;
+  function initStackState(){
+    // reset states
+    s1.classList.remove('popped');
+    s2.classList.remove('popped');
+    s3.classList.remove('popped');
+    stackStep = 0;
+    stackNextBtn.style.display = 'none';
+    stackHint.textContent = 'Tap the visible card to reveal the next';
+    // ensure layout shows first card fully on top
+    s1.style.zIndex = 3; s2.style.zIndex = 2; s3.style.zIndex = 1;
+  }
+
+  // Only the top visible card reacts to taps (we determine by z-index)
+  stackStage.addEventListener('click', (ev)=>{
+    // determine which card is currently top-most visually (highest z-index)
+    // We'll use stackStep counter: 0 -> reveal first (pop s1), 1 -> reveal s2 onto s1, 2 -> reveal s3 onto s2
+    if(stackStep === 0){
+      s1.classList.add('popped'); // pop first up
+      stackStep = 1;
+      setTimeout(()=> {
+        stackHint.textContent = 'Tap again to reveal the next card';
+      }, 350);
+    } else if(stackStep === 1){
+      s2.classList.add('popped'); // second lies onto first
+      // adjust z-index so s2 appears on top edge over s1
+      s2.style.zIndex = 3; s1.style.zIndex = 2; s3.style.zIndex = 1;
+      stackStep = 2;
+      setTimeout(()=> {
+        stackHint.textContent = 'One more tap to reveal the final card';
+      }, 350);
+    } else if(stackStep === 2){
+      s3.classList.add('popped'); // third lies onto second
+      s3.style.zIndex = 3; s2.style.zIndex = 2; s1.style.zIndex = 1;
+      stackStep = 3;
+      stackHint.textContent = 'All revealed — continue when ready';
+      // show continue
+      setTimeout(()=> stackNextBtn.style.display = 'inline-block', 600);
+    }
+  });
+
+  // Proceed to cube page
+  stackNextBtn.addEventListener('click', ()=>{
+    page2.classList.remove('active'); page2.setAttribute('aria-hidden','true');
+    page3.classList.add('active'); page3.setAttribute('aria-hidden','false');
+    // prepare heart
+    prepareHeart();
+  });
+
+  // ---------- Page3 heart -> cube ----------
+  const heartBtn = document.getElementById('heartBtn');
+  const cubeScene = document.getElementById('cubeScene');
+  const cube = document.getElementById('cube');
+  const cubeCaption = document.getElementById('cubeCaption');
+  const finalLetter = document.getElementById('finalLetter');
+  let cubeAngle = 0;
+  let cubeShown = false;
+
+  function prepareHeart(){
+    // show heart center (already visible). hide cube.
+    cubeScene.style.display = 'none';
+    cubeCaption.style.display = 'none';
+    finalLetter.style.display = 'none';
+    cubeAngle = 0;
+    cube.style.transform = `rotateY(${cubeAngle}deg)`;
+  }
+
+  heartBtn.addEventListener('click', ()=> {
+    // replace heart with cube (animated)
+    if(cubeShown) return;
+    cubeShown = true;
+    // animate heart pop & fade
+    heartBtn.style.transform = 'scale(0.2) rotate(20deg)';
+    heartBtn.style.opacity = '0';
+    setTimeout(()=>{
+      const hw = document.getElementById('heartWrap');
+      hw.style.display = 'none';
+      // show cube and caption and final letter after small delay
+      cubeScene.style.display = 'flex';
+      cubeCaption.style.display = 'block';
+      // show final letter after a moment
+      setTimeout(()=> finalLetter.style.display = 'block', 900);
+    }, 280);
+  });
+
+  // clicking cube rotates it one face to the right (stable rotation only to the right)
+  document.getElementById('cube').addEventListener('click', ()=>{
+    // ensure cube exists
+    cubeAngle += 90; // rotate right by 90 degrees
+    cube.style.transform = `rotateY(${cubeAngle}deg)`;
+  });
+
+  // Initialize: ensure only page1 visible and stage ready
+  (function init(){
+    page1.classList.add('active');
+    page2.classList.remove('active');
+    page3.classList.remove('active');
+    document.getElementById('toStackBtn').style.display = 'none';
+    initStackState();
+  })();
+
+  // Accessibility: allow keyboard progression for testing
+  window.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowRight'){
+      // if on page1 and all flipped -> go
+      if(page1.classList.contains('active') && flippedCount >= flipCards.length){
+        document.getElementById('toStackBtn').click();
+      } else if(page2.classList.contains('active') && stackStep >= 3){
+        stackNextBtn.click();
+      } else if(page3.classList.contains('active') && cubeShown){
+        cube.click();
+      }
+    }
+  });
+
+</script>
+</body>
 </html>
